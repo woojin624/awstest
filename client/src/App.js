@@ -11,28 +11,49 @@ function App() {
       .then((data) => setTitle(data.title));
   });
 
-  const valueA = 'b';
+  const [content, setContent] = useState({
+    email: '',
+    password: '',
+  });
+
+  // 객체 비구조화 할당
+  const { email, password } = content;
+
+  // 작성되는 글의 각 요소의 밸류값을 받아오는 함수
+  const getValue = (e) => {
+    const { name, value } = e.target;
+    setContent({
+      ...content,
+      [name]: value,
+    });
+  };
 
   const add = (e) => {
     e.preventDefault();
     fetch('/api/add', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      method: 'post',
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        title: 'Test',
-        body: 'I am testing!',
-        userId: 1,
+        user: {
+          email: email,
+          password: password,
+        },
       }),
-    }).then((response) => console.log(response));
-    console.log(valueA);
+    })
+      .then((response) => response.json())
+      .then((data) => console.log(data.content.user));
+
+    setContent({
+      ...content,
+      email: '',
+      password: '',
+    });
   };
 
   const send = (e) => {
     axios
       .post('/api/add', {
-        visible: valueA,
+        visible: email,
         category: '1234',
       })
       .then((response) => {
@@ -49,12 +70,12 @@ function App() {
           <h1>{title}</h1>
           <form>
             <div className='form-group'>
-              <label>to do</label>
-              <input type='text' name='title' />
+              <label>email</label>
+              <input value={email} type='text' name='email' placeholder='이메일을 입력하라' onChange={getValue} />
             </div>
             <div className='form-group'>
-              <label>date</label>
-              <input type='text' name='date' />
+              <label>password</label>
+              <input value={password} type='text' name='password' placeholder='비밀번호를 입력하라' onChange={getValue} />
             </div>
             <button type='submit' onClick={add}>
               Submit

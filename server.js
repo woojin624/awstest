@@ -4,15 +4,16 @@ const bodyParser = require('body-parser');
 const path = require('path');
 
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
 
 app.get('/api', (req, res) => {
-  console.log('api/');
   res.send({ title: 'hello react!' });
 });
 
 app.post('/api/add', function (req, res) {
   console.log(req.body);
-  res.send('전송완료');
+  const content = req.body;
+  res.send({ content });
 });
 
 //
