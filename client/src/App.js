@@ -3,27 +3,32 @@ import './App.css';
 import axios from 'axios';
 
 function App() {
-  const [title, setTitle] = useState();
+  const [mainTitle, setMainTitle] = useState();
 
   useEffect(() => {
     fetch('/api')
       .then((res) => res.json())
-      .then((data) => setTitle(data.title));
-  });
+      .then((data) => setMainTitle(data.mainTitle));
+    fetch('/api/posts')
+      .then((res) => res.json())
+      .then((data) => setPostList(data.Items));
+  }, []);
 
-  const [content, setContent] = useState({
-    email: '',
-    password: '',
+  const [postList, setPostList] = useState([]);
+
+  const [postContent, setPostContent] = useState({
+    title: '',
+    content: '',
   });
 
   // 객체 비구조화 할당
-  const { email, password } = content;
+  const { title, content } = postContent;
 
   // 작성되는 글의 각 요소의 밸류값을 받아오는 함수
   const getValue = (e) => {
     const { name, value } = e.target;
-    setContent({
-      ...content,
+    setPostContent({
+      ...postContent,
       [name]: value,
     });
   };
@@ -34,53 +39,48 @@ function App() {
       method: 'post',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        user: {
-          email: email,
-          password: password,
-        },
+        title: title,
+        content: content,
       }),
     })
       .then((response) => response.json())
       .then((data) => console.log(data.content.user));
 
-    setContent({
-      ...content,
-      email: '',
-      password: '',
+    setPostContent({
+      ...postContent,
+      title: '',
+      content: '',
     });
-  };
-
-  const send = (e) => {
-    axios
-      .post('/api/add', {
-        visible: email,
-        category: '1234',
-      })
-      .then((response) => {
-        console.log(response.data);
-      });
-    e.preventDefault();
-    alert('등록 완료!');
   };
 
   return (
     <div className='App'>
-      {title ? (
+      {mainTitle ? (
         <>
-          <h1>{title}</h1>
+          <h1>{mainTitle}</h1>
           <form>
             <div className='form-group'>
-              <label>email</label>
-              <input value={email} type='text' name='email' placeholder='이메일을 입력하라' onChange={getValue} />
+              <label>title</label>
+              <input value={title} type='text' name='title' placeholder='제목을 입력하라' onChange={getValue} />
             </div>
             <div className='form-group'>
-              <label>password</label>
-              <input value={password} type='text' name='password' placeholder='비밀번호를 입력하라' onChange={getValue} />
+              <label>content</label>
+              <input value={content} type='text' name='content' placeholder='내용을 입력하라' onChange={getValue} />
             </div>
             <button type='submit' onClick={add}>
               Submit
             </button>
           </form>
+          <div>
+            {postList.map((post, i) => {
+              return (
+                <article key={i}>
+                  <h3>{post.title}</h3>
+                  <p>{post.content}</p>
+                </article>
+              );
+            })}
+          </div>
         </>
       ) : (
         <h1>LOADING</h1>
