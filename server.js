@@ -7,7 +7,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
 app.get('/api', (req, res) => {
-  res.send({ title: 'hello react!' });
+  res.send({ title: 'Hello React!' });
 });
 
 app.post('/api/add', function (req, res) {
